@@ -20,18 +20,22 @@ map <string, int> ::iterator valid_entry;       // Map iterator
 void create_translation();
 void execute_instructions(int opcode);
 void process_file();
+void additional_instructions ();
+void display_menu();
 
 
-int ACC, PC=0, opcode, operand, result;         // Variables to hold values for accumulator, program counter
+int ACC, PC=0, opcode, operand, result, new_operand;         // Variables to hold values for accumulator, program counter
                                                 // opcode, operand, result of string converted to int
 vector<int> RAM;                                // Vector to hold opcodes and operands
-string filename, entry;                         // Variables to hold filename and instructions to be interpreted by translator
+string filename, entry, user_added_opcode;                         // Variables to hold filename and instructions to be interpreted by translator
+
 
 int main()
 {
 
     create_translation();                       // Translate mnemonics to numbers for execution
     process_file();
+    additional_instructions ();
 
     return 0;
 }
@@ -142,4 +146,47 @@ void process_file(){
     }
 
     myfile.close();
+}
+
+
+void additional_instructions (){
+    char response;
+    cout << "Do you have additional instructions? If so, enter 'Y'. " << endl;
+    cin >> response;
+
+    if (response =='Y' || response =='y'){
+        display_menu();
+        cin >> user_added_opcode >> new_operand;
+        valid_entry = translation.find(user_added_opcode);
+        {if (valid_entry == translation.end()){
+            cout << "ERROR" << endl;
+            }
+            else
+                RAM.push_back(valid_entry->second);
+        }
+        RAM.push_back(new_operand);
+
+        for(int i=0; i<RAM.size(); i++){        // FETCH CYCLE
+            opcode = RAM[PC];
+            execute_instructions(opcode);
+            cout << "New value: " << ACC << endl;
+        }
+
+    }
+    else{
+        cout << "Exiting program." << endl;
+        exit (EXIT_SUCCESS);
+    }
+}
+
+void display_menu(){
+    cout << "Step 1: Select an operation to perform: " <<endl;
+    cout << "Enter CLR to clear last calculated value, OR" << endl;
+    cout << "Enter LOAD to load an operand to the accumulator, OR" << endl;
+    cout << "Enter ADD to add operand to last calculated value, OR" << endl;
+    cout << "Enter SUB to subtract operand from last calculated value, OR" << endl;
+    cout << "Enter MUL to multiply last calculated value by an operand, OR" << endl;
+    cout << "Enter DIV to divide last calculated value by an operand, OR" << endl;
+    cout << "Enter OUT to display last calculated value, OR" << endl;
+    cout << "Enter HALT to halt program." << endl;
 }
