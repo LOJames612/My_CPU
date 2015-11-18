@@ -30,16 +30,12 @@ string filename, entry;                         // Variables to hold filename an
 int main()
 {
     filename = filename_prompt();               // Prompt for name of file
+    ifstream myfile(filename.c_str());
 
     create_translation();                       // Translate mnemonics to numbers for execution
 
-    while (true)
-    {
-    ifstream myfile(filename.c_str());
     if (myfile.is_open()){
-        //cout << "File is open";
-        do {
-            (myfile >> entry && !myfile.eof());//{
+        while (myfile >> entry && !myfile.eof()){
             valid_entry = translation.find(entry);
             if (valid_entry == translation.end()){
                 istringstream(entry) >> result;
@@ -47,11 +43,7 @@ int main()
                 }
             else
                 RAM.push_back(valid_entry->second);
-        } while (entry != "HALT");
-
-        //for (int i=0; i<RAM.size(); i++){
-        //cout << RAM[i] <<endl;
-        //}
+        }
 
         for(int i=0; i<RAM.size(); i++){
             // Fetch cycle
@@ -59,10 +51,11 @@ int main()
             execute_instructions(opcode);
         }
     }
-    else
-        cout << "Error in opening your file, try again." << endl;
-        cin >> filename;
+    else {
+            cout << "Error in opening your file, try again." << endl;
     }
+
+    myfile.close();
     return 0;
 }
 
