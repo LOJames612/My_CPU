@@ -15,7 +15,7 @@
 using namespace std;
 
 string filename_prompt();
-map <string, int> translation;                  // Map
+map <string, int> translation;                  // Map relating each mnemonic to a number
 map <string, int> ::iterator valid_entry;       // Map iterator
 void create_translation();
 void execute_instructions(int opcode);
@@ -29,33 +29,10 @@ string filename, entry;                         // Variables to hold filename an
 
 int main()
 {
-    filename = filename_prompt();               // Prompt for name of file
-    ifstream myfile(filename.c_str());
 
     create_translation();                       // Translate mnemonics to numbers for execution
+    process_file();
 
-    if (myfile.is_open()){
-        while (myfile >> entry && !myfile.eof()){
-            valid_entry = translation.find(entry);
-            if (valid_entry == translation.end()){
-                istringstream(entry) >> result;
-                RAM.push_back(result);
-                }
-            else
-                RAM.push_back(valid_entry->second);
-        }
-
-        for(int i=0; i<RAM.size(); i++){
-            // Fetch cycle
-            opcode = RAM[PC];
-            execute_instructions(opcode);
-        }
-    }
-    else {
-            cout << "Error in opening your file, try again." << endl;
-    }
-
-    myfile.close();
     return 0;
 }
 
@@ -140,4 +117,29 @@ void execute_instructions(int opcode){
 
 void process_file(){
 
+    filename = filename_prompt();               // Prompt for name of file
+    ifstream myfile(filename.c_str());
+
+    if (myfile.is_open()){
+        while (myfile >> entry && !myfile.eof()){
+            valid_entry = translation.find(entry);
+            if (valid_entry == translation.end()){
+                istringstream(entry) >> result;
+                RAM.push_back(result);
+                }
+            else
+                RAM.push_back(valid_entry->second);
+        }
+
+        for(int i=0; i<RAM.size(); i++){
+            // Fetch cycle
+            opcode = RAM[PC];
+            execute_instructions(opcode);
+        }
+    }
+    else {
+            cout << "Error in opening your file, try again." << endl;
+    }
+
+    myfile.close();
 }
