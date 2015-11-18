@@ -154,16 +154,20 @@ void additional_instructions (){
     cout << "Do you have additional instructions? If so, enter 'Y'. " << endl;
     cin >> response;
 
-    if (response =='Y' || response =='y'){
+    if(response =='Y' || response =='y'){
         display_menu();
-        cin >> user_added_opcode >> new_operand;
+        cin >> user_added_opcode;        //***CONVERT USER INPUT TO AL CAPS
         valid_entry = translation.find(user_added_opcode);
-        {if (valid_entry == translation.end()){
-            cout << "ERROR" << endl;
+        {
+            if(valid_entry == translation.end()){
+                cout << "Error - Action not known." << endl;
             }
-            else
+            else{
                 RAM.push_back(valid_entry->second);
+            }
         }
+        cout << "Step 2: Enter the operand: " <<endl;
+        cin >> new_operand;
         RAM.push_back(new_operand);
 
         for(int i=0; i<RAM.size(); i++){        // FETCH CYCLE
@@ -171,16 +175,15 @@ void additional_instructions (){
             execute_instructions(opcode);
             cout << "New value: " << ACC << endl;
         }
-
     }
     else{
         cout << "Exiting program." << endl;
-        exit (EXIT_SUCCESS);
+        //***GO BACK TO MAIN MENU;
     }
 }
 
 void display_menu(){
-    cout << "Step 1: Select an operation to perform: " <<endl;
+    cout << "Step 1 - Select an operation to perform: " <<endl;
     cout << "Enter CLR to clear last calculated value, OR" << endl;
     cout << "Enter LOAD to load an operand to the accumulator, OR" << endl;
     cout << "Enter ADD to add operand to last calculated value, OR" << endl;
@@ -188,5 +191,4 @@ void display_menu(){
     cout << "Enter MUL to multiply last calculated value by an operand, OR" << endl;
     cout << "Enter DIV to divide last calculated value by an operand, OR" << endl;
     cout << "Enter OUT to display last calculated value, OR" << endl;
-    cout << "Enter HALT to halt program." << endl;
 }
