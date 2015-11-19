@@ -165,7 +165,7 @@ void process_file(){
 }
 
 
-void additional_instructions (){
+void additional_instructions (){        //FUTURE WORK: Loop to allow more than one additional instruction
     char response;
     cout << "Do you have additional instructions? If so, enter 'Y'. " << endl;
     cin >> response;
@@ -285,6 +285,7 @@ void execute_main_menu(int main_select){
         default:
             cout << endl;
             cout << "Sorry, that is not an option. Please select from one of the options below." <<endl;
+            //FUTURE WORK: Loop to prompt for filename re-entry when previous entries fail.
             main_select = main_menu();
             execute_main_menu(main_select);
     }
