@@ -11,14 +11,11 @@
 #include <vector>
 #include <map>
 #include <stdlib.h>
-
 using namespace std;
-
-string filename_prompt();
-
 
 map <string, int> translation;                  // Map relating each mnemonic to a number
 map <string, int> ::iterator valid_entry;       // Map iterator
+string filename_prompt();
 void create_translation();
 void execute_instructions(int);
 void process_file();
@@ -29,7 +26,6 @@ void about();
 void display_file();
 void execute_main_menu(int);
 
-
 const int ABOUT = 1;
 const int DISPLAY_FILE = 2;
 const int EXECUTE_FILE = 3;
@@ -39,21 +35,20 @@ int ACC, PC=0, opcode, operand, main_select, result, new_operand;    // Variable
                                                                     // opcode, operand, result of string converted to int
 vector<int> RAM;                                                    // Vector to hold opcodes and operands
 string filename, entry, user_added_opcode;                          // Variables to hold filename and instructions
-                                                                    // (opcodes and operands) to be interpreted by translator
-
+char user_entry;                                                    // (opcodes and operands) to be interpreted by translator
 
 int main()
 {
+    create_translation();                       // Translate mnemonics to numbers for execution
+
     main_select = main_menu();
     execute_main_menu(main_select);
-    create_translation();                       // Translate mnemonics to numbers for execution
-    process_file();                             // Process and execute file
-    additional_instructions ();                 // Ask user for additional instructions
 
     return 0;
 }
 
 
+//Prompt for filename input
 string filename_prompt(){
     string textfile;
 
@@ -73,9 +68,10 @@ void create_translation(){
     translation ["OUT"] = 6;
     translation ["JMP"] = 7;
     translation ["BNZ"] = 8;
-    translation ["STORE"] =9;
-    translation ["HALT"] = 0x49;
+    translation ["STORE"] = 9;
+    translation ["HALT"] = 0xF4;
 }
+
 
 //Function to execute instructions based on mnemonics
 void execute_instructions(int opcode){
@@ -121,7 +117,7 @@ void execute_instructions(int opcode){
             operand = RAM[++PC];
             PC = operand;
             break;
-        case 8:                         //
+        case 8:                         // Branch Not Zero
             operand = RAM[++PC];
             if ( ACC != 0 )
                 PC = operand;
@@ -131,36 +127,38 @@ void execute_instructions(int opcode){
         case 9:                                 // Store ACC to a memory location
             operand = RAM[++PC];
             RAM[PC] = ACC;
-        case 0x49:                              // Halt program
+        case 0xF4:                              // Halt program
             cout << "Program halted" << endl;
             break;
     }
 }
 
+
 void process_file(){
 
     filename = filename_prompt();               // Prompt for name of file
-    ifstream myfile(filename.c_str());
+    ifstream myfile(filename.c_str());          // Stream in contents file
 
     if (myfile.is_open()){
         while (myfile >> entry && !myfile.eof()){   // Reads in each element in uploaded file
             valid_entry = translation.find(entry);  // Translates elements into CPU language (defined in map)
-            if (valid_entry == translation.end()){
-                istringstream(entry) >> result;      // If
+            if (valid_entry == translation.end()){    //If match is found in map, push entry to RAM
+                istringstream(entry) >> result;
                 RAM.push_back(result);
                 }
             else
-                RAM.push_back(valid_entry->second); //
+                RAM.push_back(valid_entry->second);        //If match is found in map, push translated instruction to RAM
         }
 
-        for(int i=0; i<RAM.size(); i++){
-            // Fetch cycle
+        for(int i=0; i<RAM.size(); i++){                    // Fetch cycle
             opcode = RAM[PC];
             execute_instructions(opcode);
         }
     }
     else {
             cout << "Error in opening your file, try again." << endl;
+            main_select = main_menu();
+            execute_main_menu(main_select);
     }
 
     myfile.close();
@@ -173,18 +171,18 @@ void additional_instructions (){
     cin >> response;
 
     if(response =='Y' || response =='y'){
-        display_menu();
-        cin >> user_added_opcode;        //***CONVERT USER INPUT TO AL CAPS
-        valid_entry = translation.find(user_added_opcode);
+        display_menu();                                     //Prompt user for additional opcode
+        cin >> user_added_opcode;
+        valid_entry = translation.find(user_added_opcode);  // Match user entry against translation map
         {
             if(valid_entry == translation.end()){
-                cout << "Error - Action not known." << endl;
+                cout << "Error - Action unknown." << endl;  //In case of unknown opcode
             }
             else{
-                RAM.push_back(valid_entry->second);
+                RAM.push_back(valid_entry->second);           // If match is found in map, push translated instruction to RAM
             }
         }
-        cout << "Step 2: Enter the operand: " <<endl;
+        cout << "Step 2: Enter the operand: " <<endl;           //Prompt for user's operand
         cin >> new_operand;
         RAM.push_back(new_operand);
 
@@ -196,10 +194,13 @@ void additional_instructions (){
     }
     else{
         cout << "Returning to main menu..." << endl;
-        main_menu();
+        main_select = main_menu();
+        execute_main_menu(main_select);
     }
 }
 
+
+//Menu for additional instruction options
 void display_menu(){
     cout << "Step 1 - Select an operation to perform: " <<endl;
     cout << "Enter CLR to clear last calculated value, OR" << endl;
@@ -211,6 +212,8 @@ void display_menu(){
     cout << "Enter OUT to display last calculated value, OR" << endl;
 }
 
+
+//Main menu
 int main_menu(){
     int selection;
 
@@ -223,6 +226,7 @@ int main_menu(){
     return selection;
 }
 
+
 void about(){
     cout << "CPU created by Olivia James." << endl;
     cout << "(c) Copyright 2015. All Rights Reserved." << endl;
@@ -230,28 +234,53 @@ void about(){
     cout << "#girlsbuiltthis" <<endl;
 }
 
+
 void display_file(){
 
-    for(int i=0; i<RAM.size(); i++){        // FETCH CYCLE
-        cout << RAM[i] << endl;
+    filename = filename_prompt();               // Prompt for name of file
+    ifstream myfile(filename.c_str());          // Stream in contents file
+
+    if (myfile.is_open()){
+        while (myfile >> entry && !myfile.eof()){   // Reads in each element in uploaded file
+            cout << entry <<endl;
         }
+    }
 }
 
+
 void execute_main_menu(int main_select){
+
     switch (main_select){
         case 1:
             about();
+            cout << "Enter 'M' to return to the main menu: " <<endl;
+            cin >> user_entry;
+            if (user_entry == 'M' || user_entry == 'm'){
+                    system("CLS");                      //Clear screen
+                    main_select = main_menu();          //Back to main menu
+                    execute_main_menu(main_select);
+                }
             break;
         case 2:
+
             display_file();
+            cout << "Enter 'M' to return to the main menu: " <<endl;
+            cin >> user_entry;
+                if (user_entry == 'M' || user_entry == 'm'){
+                    system("CLS");
+                    main_select = main_menu();
+                    execute_main_menu(main_select);
+                }
             break;
         case 3:
-            execute_instructions(opcode);
+            process_file();                 // Process and execute file
+            additional_instructions ();     // Ask user for additional instructions
             break;
         case 4:
             exit(EXIT_SUCCESS);
         default:
             cout << "Sorry, that is not an option. Please select from one of the options below." <<endl;
-            main_menu();
+            main_select = main_menu();
+            execute_main_menu(main_select);
     }
 }
