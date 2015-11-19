@@ -252,7 +252,9 @@ void execute_main_menu(int main_select){
 
     switch (main_select){
         case 1:
+            cout << endl;
             about();
+            cout <<endl;
             cout << "Enter 'M' to return to the main menu: " <<endl;
             cin >> user_entry;
             if (user_entry == 'M' || user_entry == 'm'){
@@ -262,8 +264,9 @@ void execute_main_menu(int main_select){
                 }
             break;
         case 2:
-
+            cout << endl;
             display_file();
+            cout << endl;
             cout << "Enter 'M' to return to the main menu: " <<endl;
             cin >> user_entry;
                 if (user_entry == 'M' || user_entry == 'm'){
@@ -273,12 +276,14 @@ void execute_main_menu(int main_select){
                 }
             break;
         case 3:
+            cout << endl;
             process_file();                 // Process and execute file
             additional_instructions ();     // Ask user for additional instructions
             break;
         case 4:
             exit(EXIT_SUCCESS);
         default:
+            cout << endl;
             cout << "Sorry, that is not an option. Please select from one of the options below." <<endl;
             main_select = main_menu();
             execute_main_menu(main_select);
