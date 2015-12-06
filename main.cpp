@@ -296,6 +296,7 @@ void execute_main_menu(int main_select){
         case 3:
             cout << endl;
             process_file();                 // Process and execute file
+            cout <<endl;
             additional_instructions ();     // Ask user for additional instructions
             break;
         case 4:
