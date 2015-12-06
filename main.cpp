@@ -168,6 +168,7 @@ void process_file(){
 void additional_instructions (){        //FUTURE WORK: Loop to allow more than one additional instruction
     char response;
     cout << "Do you have additional instructions? If so, enter 'Y'. " << endl;
+    cout << "If not, press any other key and you will be returned to the main menu." <<endl;
     cin >> response;
 
     if(response =='Y' || response =='y'){
@@ -189,11 +190,17 @@ void additional_instructions (){        //FUTURE WORK: Loop to allow more than o
         for(int i=0; i<RAM.size(); i++){                        // Fetch cycle
             opcode = RAM[PC];
             execute_instructions(opcode);
-            cout << "New value: " << ACC << endl;
+
         }
+        cout <<endl;
+        cout << "New value: " << ACC << endl;
+        cout << endl;
+        main_select = main_menu();
+        execute_main_menu(main_select);
     }
     else{
         cout << "Returning to main menu..." << endl;
+        cout << endl;
         main_select = main_menu();
         execute_main_menu(main_select);
     }
@@ -209,7 +216,7 @@ void display_menu(){
     cout << "Enter SUB to subtract operand from last calculated value, OR" << endl;
     cout << "Enter MUL to multiply last calculated value by an operand, OR" << endl;
     cout << "Enter DIV to divide last calculated value by an operand, OR" << endl;
-    cout << "Enter OUT to display last calculated value, OR" << endl;
+    cout << "Enter OUT to display last calculated value."<< endl;
 }
 
 
@@ -245,6 +252,8 @@ void display_file(){
             cout << entry <<endl;
         }
     }
+        else
+            cout << "File could not be opened." <<endl;
 }
 
 
