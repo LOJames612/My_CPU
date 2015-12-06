@@ -10,6 +10,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
+#include <locale>
 #include <stdlib.h>
 using namespace std;
 
@@ -17,7 +18,7 @@ map <string, int> translation;                  // Map relating each mnemonic to
 map <string, int> ::iterator valid_entry;       // Map iterator
 string filename_prompt();
 void create_translation();
-void execute_instructions(int);
+void execute_instructions(const int);
 void process_file();
 void additional_instructions ();
 void display_menu();
@@ -74,7 +75,7 @@ void create_translation(){
 
 
 //Function to execute instructions based on mnemonics
-void execute_instructions(int opcode){
+void execute_instructions(const int opcode){
     switch(opcode){
         case 0:                         // Clear ACC to zero
             ACC = 0;
@@ -156,6 +157,7 @@ void process_file(){
         }
     }
     else {
+            cout <<endl;
             cout << "Error in opening your file, try again." << endl;
             main_select = main_menu();
             execute_main_menu(main_select);
@@ -177,12 +179,15 @@ void additional_instructions (){        //FUTURE WORK: Loop to allow more than o
         valid_entry = translation.find(user_added_opcode);  // Match user entry against translation map
         {
             if(valid_entry == translation.end()){
+                cout <<endl;
                 cout << "Error - Action unknown." << endl;  //In case of unknown opcode
+                additional_instructions();
             }
             else{
                 RAM.push_back(valid_entry->second);           // If match is found in map, push translated instruction to RAM
             }
         }
+        cout << endl;
         cout << "Step 2: Enter the operand: " <<endl;           //Prompt for user's operand
         cin >> new_operand;
         RAM.push_back(new_operand);
@@ -199,6 +204,7 @@ void additional_instructions (){        //FUTURE WORK: Loop to allow more than o
         execute_main_menu(main_select);
     }
     else{
+        cout <<endl;
         cout << "Returning to main menu..." << endl;
         cout << endl;
         main_select = main_menu();
@@ -209,6 +215,7 @@ void additional_instructions (){        //FUTURE WORK: Loop to allow more than o
 
 //Menu for additional instruction options
 void display_menu(){
+    cout <<endl;
     cout << "Step 1 - Select an operation to perform: " <<endl;
     cout << "Enter CLR to clear last calculated value, OR" << endl;
     cout << "Enter LOAD to load an operand to the accumulator, OR" << endl;
@@ -224,6 +231,7 @@ void display_menu(){
 int main_menu(){
     int selection;
 
+    cout <<endl;
     cout << "Welcome to Olivia's CPU! Please select an option:" <<endl;
     cout << "1..... About" <<endl;
     cout << "2..... Display file contents" <<endl;
@@ -235,6 +243,7 @@ int main_menu(){
 
 
 void about(){
+    cout <<endl;
     cout << "CPU created by Olivia James." << endl;
     cout << "(c) Copyright 2015. All Rights Reserved." << endl;
     cout << "There are 10 types of people in this world: those who know binary and those who don't." <<endl;
